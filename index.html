@@ -6,22 +6,22 @@
     <style>
         .chart-container {
             max-width: 1050px;
-            border: 3px solid red;
+            /* border: 3px solid red; */
             margin: 0 auto;
             /* auto centers the div */
             font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
         }
 
         svg {
-            border: 2px solid purple;
+            /* border: 2px solid purple; */
             overflow: visible;
         }
 
 
         h1 {
-            border: 2px solid green;
-        }
-        .pop-up {
+             border: 2px solid green; 
+         }
+         .pop-up {
             position: absolute;
             border: 1px solid black;
             border-radius: 1px;
@@ -30,8 +30,8 @@
             height: 100px;
             pointer-events: none;
             background-color: white;
-            padding: 10px;
-        }
+            padding: 10px; 
+         } 
 
     </style>
     <!-- add your script blocks at the end -->
@@ -47,8 +47,8 @@
         <svg width="1050px" height="500px">
 
         </svg>
-        <div class = "pop-up"
-        </div> 
+        <div class = "pop-up">
+    </div> 
     </div>
 </body>
 
@@ -59,47 +59,61 @@
 <!-- load topojson script -->
 <script src="https://unpkg.com/topojson@3"></script>
 
+
+<!-- <script>
+    data = NaN;
+    if (isNaN(data)) number = 0;
+    console.log(data);
+</script> -->
+
 <script>
     console.log({ d3 })
     console.log({ topojson })
+    let svg = d3.select("body").select("svg")
+
+    let margin = { top: 10, right: 10, bottom: 0, left: 0}
 
     // //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
-    Promise.all([ //waits for all the data to load, then when loaded will return it all in one array called res
-        d3.json('state-county-pov.json'),
-    ])
-        .then(ready)
-        .catch((err) => {
-            console.log(err);
-        });
+    // Promise.all([ //waits for all the data to load, then when loaded will return it all in one array called res
+        d3.json("state-county-pov.json").then(function (data) {
+            console.log("loaded")
+            console.log(data)
+    
 
-    function ready(res) {
-        console.log(res[0])
-        let raw = res[0]
+    // ])
+        // .then(ready)
+        // .catch((err) => {
+        //     console.log(err);
+        // });
 
-        let county = topojson.feature(raw, raw.objects.county);
-        let state = topojson.feature(raw, raw.objects.state);
+    // function ready(res) {
+    //     console.log(res[0])
+    //     let raw = res[0]
+
+        let county = topojson.feature(data, data.objects.county);
+        let state = topojson.feature(data, data.objects.state);
+        console.log(county)
 
         let width = 1050;
         let height = 500;
 
-        console.log(county, state)
+        console.log(county)
 
-        let svg = d3.select("body").select("svg")
 
-        let myProjection = d3.geoAlbersUsa()
-            .fitSize([width, height], county)
+        let projection = d3.geoIdentity()
+            .fitSize([width, height], state)
+            .reflectY(true)
 
         //path function
-        let path = d3.geoPath()
-            .projection(myProjection)
+        let path = d3.geoPath(projection)
 
-        let innerlines = topojson.mesh(raw, raw.objects.state, function (a, b) {
-            return a != b;
-        });
+        // let innerlines = topojson.mesh(data, data.objects.state, function (a, b) {
+        //     return a != b;
+        // });
 
 
         svg
-            .selectAll(".states")
+            .selectAll(".state")
             .data(state.features)
             .join("path")
             .attr("d", path)
@@ -108,13 +122,13 @@
             .style("pointer-events", "mouseover")
 
 
-        let states = svg
-            .append("path")
-            .attr("d", path(innerlines))
-            .style("fill", "none")
-            .style("stroke", "#333")
-            .style("stroke-width", 1)
-            .style("pointer-events", "mouseover")
+        // let states = svg
+        //     .append("path")
+        //     .attr("d", path(innerlines))
+        //     .style("fill", "none")
+        //     .style("stroke", "#333")
+        //     .style("stroke-width", 1)
+        //     .style("pointer-events", "mouseover")
 
             
             let scaleFunction = d3.scaleSqrt()
@@ -122,7 +136,7 @@
             .range([])
 
         let counties = svg
-            .selectAll(".counties")
+            .selectAll(".county")
             .data(county.features)
             .join("circle")
             .attr("r", d => scaleFunction(d))
@@ -136,28 +150,41 @@
             .style("stroke", "#ccc")
             .style("stroke-width", .2)
 
-    }
 
 
+svg.append("g")
+    .attr("class", "state")
+    .selectAll("path")
+    .data(state.features)
+    .join("path")
+    .attr("d", path)
+    .attr("fill", "lightgrey")
+    .attr("stroke", "white")
 
-let popup = d3.select(".pop-up");
+//     state.features.filter(function(d) { 
+//     return d.geometry.coordinates == NaN; 
+// })
+// .remove();
+
 
 let circles = svg.append("g")
     .selectAll(".circles")
-    .data(counties.features.filter(d => d.geometry != null).sort((a, b) => d3.descending(a.properties.pop_18_in_poverty, b.properties.pop_18_in_poverty)))
+    .data(county.features.filter(d => d.geometry != null).sort((a, b) => d3.descending(a.properties.pop_18_in_poverty, b.properties.pop_18_in_poverty)))
     .join("circle")
     .attr("class", function (d) { return "circles p-" + d.properties.GEOID}) // Give circles a class name.
-    // .attr("cx", function (d) { return x(d.state) }) //callback to access the data, position according to x axis
-    // .attr("cy", function (d) { return y(d.county) })
-    // .attr("r", function (d) { return r(d.totavg) })
-    .style("stroke", "white")
-    .style("stroke-width", 0.1)
-    .style("fill", "orange")
-    // .style("fill-opacity", .5)
-    .attr("transform", d=> 'translate(${projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])})')
-    .attr("r", d => Math.sqrt(d.properties.pop_18_in_poverty/150))
+    .attr("fill", "lightcoral")
+    .attr("fill-opacity", 0.5)
+    .attr("stroke-width", 0.8)
+    .attr("transform", d => `translate(${projection([d.geometry.coordinates[0], d.geometry.coordinates[1]])})`)
+    .attr("r", d => Math.sqrt(d.properties.pop_18_in_poverty /150))
+    // .attr("cx", function (d) { return (d.state) }) //callback to access the data, position according to x axis
+    // .attr("cy", function (d) { return (d.county) })
+    // .attr("r", function (d) { return (d.pop_18_in_poverty) })
+    // .attr("stroke", "#fff")
+    .style("fill-opacity", .5)
+    
 
-
+let popup = d3.select(".pop-up");
 
 circles.on("mouseover", (event, d) => {
     console.log(event)
@@ -184,20 +211,8 @@ circles.on("mouseover", (event, d) => {
 
 })
     
-
-points.on("mouseout", (event, d) => {
-    console.log(event)
-    points
-        .style("stroke", "#333333")
-        .style("stroke-width", .5)
-        .style("fill", "#c0cad8")
-
-    popup
-        .style("opacity", 0)
-    })
-
-    
-
+     
+})
 
 
 
