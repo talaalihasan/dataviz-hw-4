@@ -75,7 +75,7 @@
 
     // //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
     // Promise.all([ //waits for all the data to load, then when loaded will return it all in one array called res
-        d3.json("state-county-pov.json").then(function (data) {
+        d3.json("bubblecounties.json").then(function (data) {
             console.log("loaded")
             console.log(data)
     
@@ -112,14 +112,14 @@
         // });
 
 
-        svg
-            .selectAll(".state")
-            .data(state.features)
-            .join("path")
-            .attr("d", path)
-            .style("fill", "#eee")
-            .style("stroke", "none")
-            .style("pointer-events", "mouseover")
+        // svg
+        //     .selectAll(".state")
+        //     .data(state.features)
+        //     .join("path")
+        //     .attr("d", path)
+        //     .style("fill", "#eee")
+        //     .style("stroke", "none")
+        //     .style("pointer-events", "mouseover")
 
 
         // let states = svg
@@ -131,24 +131,24 @@
         //     .style("pointer-events", "mouseover")
 
             
-            let scaleFunction = d3.scaleSqrt()
-            .domain([])
-            .range([])
+        //     let scaleFunction = d3.scaleSqrt()
+        //     .domain([])
+        //     .range([])
 
-        let counties = svg
-            .selectAll(".county")
-            .data(county.features)
-            .join("circle")
-            .attr("r", d => scaleFunction(d))
-            .attr("cx", d => {
-                return path.centroid(d)[0]
-            })
-            .attr("cy", d => {
-                return path.centroid(d)[1]
-            })
-            .style("fill", "red")
-            .style("stroke", "#ccc")
-            .style("stroke-width", .2)
+        // let counties = svg
+        //     .selectAll(".county")
+        //     .data(county.features)
+        //     .join("circle")
+        //     .attr("r", d => scaleFunction(d))
+        //     // .attr("cx", d => {
+        //     //     return path.centroid(d)[0]
+        //     // })
+        //     // .attr("cy", d => {
+        //     //     return path.centroid(d)[1]
+        //     // })
+        //     .style("fill", "red")
+        //     .style("stroke", "#ccc")
+        //     .style("stroke-width", .2)
 
 
 
@@ -180,7 +180,7 @@ let circles = svg.append("g")
     // .attr("cx", function (d) { return (d.state) }) //callback to access the data, position according to x axis
     // .attr("cy", function (d) { return (d.county) })
     // .attr("r", function (d) { return (d.pop_18_in_poverty) })
-    // .attr("stroke", "#fff")
+    .attr("stroke", "#fff")
     .style("fill-opacity", .5)
     
 
@@ -191,7 +191,7 @@ circles.on("mouseover", (event, d) => {
     console.log(data)
 
 
-    svg.select(".circles p-" + d.properties.GEOID)
+    svg.select(".circles p-" + d.properties.pop_18_in_poverty)
         .style("stroke", "black")
         .style("stroke-width", 2)
         .style("fill", "yellow")
@@ -201,7 +201,7 @@ circles.on("mouseover", (event, d) => {
     console.log(d)
 
     let lang = "In " + d.properties.GEO_QName + ", the number of children in poverty"
-    lang += d3.d.properties.pop_18_in_survey
+    lang += d3.d.properties.pop_18_in_poverty
 
     popup
         .style("opacity", 1)
