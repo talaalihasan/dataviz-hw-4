@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+1<!DOCTYPE html>
 <html>
 
 <head>
@@ -71,6 +71,8 @@
     console.log({ topojson })
     let svg = d3.select("body").select("svg")
 
+
+
     let margin = { top: 10, right: 10, bottom: 0, left: 0}
 
     // //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
@@ -111,6 +113,18 @@
         //     return a != b;
         // });
 
+
+    // let x = d3.scaleLinear()
+    //         .domain(d3.extent(data, function (d) { return d.state }))
+    //         .range([margin.left, width - margin.right])
+
+    //     let y = d3.scaleLinear()
+    //         .domain(d3.extent(data, function (d) { return d.county }))
+    //         .range([height - margin.bottom, margin.top])
+
+        // var r = d3.scaleSqrt()
+        //     .domain([0, d3.max(data, function (d) { return d.pop_18_in_poverty; })])
+        //     .range([1, 50]);
 
         // svg
         //     .selectAll(".state")
@@ -186,30 +200,30 @@ let circles = svg.append("g")
 
 let popup = d3.select(".pop-up");
 
-circles.on("mouseover", (event, d) => {
-    console.log(event)
-    console.log(data)
+// circles.on("mouseover", (event, d) => {
+//     console.log(event)
+//     console.log(data)
 
 
-    svg.select(".circles p-" + d.properties.pop_18_in_poverty)
-        .style("stroke", "black")
-        .style("stroke-width", 2)
-        .style("fill", "yellow")
-        .style("fill-opacity", 1)
-        .raise()
+//     svg.select(".circles p-" + d.properties.pop_18_in_poverty)
+//         .style("stroke", "black")
+//         .style("stroke-width", 2)
+//         .style("fill", "yellow")
+//         .style("fill-opacity", 1)
+//         .raise()
     
-    console.log(d)
+    // console.log(d)
 
-    let lang = "In " + d.properties.GEO_QName + ", the number of children in poverty"
-    lang += d3.d.properties.pop_18_in_poverty
+    // let lang = "In " + d.properties.GEO_QName + ", the number of children in poverty"
+    // lang += d3.d.properties.pop_18_in_poverty
 
     popup
-        .style("opacity", 1)
-        .style("left", (event.x -50) + "px")
-        .style("top", (event.y -100) + "px")
-        .html(lang);
+        // .style("opacity", 1)
+        .style("left", (event.r -50) + "px")
+        .style("top", (event.r -100) + "px")
+        // .html(lang);
 
-})
+// })
 
      
 })
